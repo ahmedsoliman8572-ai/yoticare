@@ -164,7 +164,6 @@ export default function CheckoutPage() {
         variant_id: item.variant_id || null,
         variant_name: locale === "ar" ? item.variant_name_ar : item.variant_name_en,
         quantity: item.quantity, unit_price: item.price, total_price: item.price * item.quantity,
-        image_path: item.image_path,
       }));
 
       await supabase.from("order_items").insert(orderItems);
