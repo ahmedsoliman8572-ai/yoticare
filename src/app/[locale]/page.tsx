@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Sparkles, Leaf, Truck, HeartHandshake, FolderOpen } from "lucide-react";
+import { Sparkles, Leaf, Truck, HeartHandshake, FolderOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getStorageUrl } from "@/lib/utils";
 
@@ -100,33 +100,44 @@ export default async function HomePage() {
             <div className="w-16 h-1 bg-accent mx-auto rounded-full" />
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {categories.map((cat, idx) => (
               <Link
                 key={cat.slug}
                 href={`/${locale}/categories/${cat.slug}`}
-                className="group relative bg-white rounded-xl border border-border hover:border-primary/30 p-6 md:p-8 text-center card-hover animate-fade-in-up"
+                className="group relative bg-white rounded-[2rem] p-6 md:p-8 text-center transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 border border-transparent hover:border-primary/20 overflow-hidden animate-fade-in-up"
                 style={{ animationDelay: `${idx * 80}ms` }}
               >
-                <div className="flex justify-center mb-4">
-                  {cat.image_path ? (
-                    <Image
-                      src={getStorageUrl(cat.image_path)}
-                      alt={locale === "ar" ? cat.name_ar : cat.name_en}
-                      width={64}
-                      height={64}
-                      className="object-contain h-16 w-16"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                      <FolderOpen className="w-8 h-8" />
-                    </div>
-                  )}
+                {/* Decorative Background Blobs */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors duration-500" />
+                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-accent/5 rounded-full blur-2xl group-hover:bg-accent/10 transition-colors duration-500" />
+
+                <div className="relative flex flex-col items-center">
+                  <div className="w-20 h-20 md:w-24 md:h-24 mb-5 rounded-full flex items-center justify-center bg-gray-50 shadow-inner group-hover:scale-110 transition-transform duration-500 ease-out p-3">
+                    {cat.image_path ? (
+                      <Image
+                        src={getStorageUrl(cat.image_path)}
+                        alt={locale === "ar" ? cat.name_ar : cat.name_en}
+                        width={80}
+                        height={80}
+                        className="object-contain w-full h-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-primary/5 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                        <Sparkles className="w-8 h-8 md:w-10 md:h-10" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <h3 className="text-lg md:text-xl font-bold font-heading text-text group-hover:text-primary transition-colors duration-300">
+                    {locale === "ar" ? cat.name_ar : cat.name_en}
+                  </h3>
+                  
+                  <div className="mt-3 flex items-center justify-center gap-1 text-sm font-medium text-primary opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                    {locale === "ar" ? "تسوق الآن" : "Shop Now"}
+                    {locale === "ar" ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                  </div>
                 </div>
-                <h3 className="font-semibold text-text group-hover:text-primary transition-colors">
-                  {locale === "ar" ? cat.name_ar : cat.name_en}
-                </h3>
-                <div className="absolute inset-0 rounded-xl bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               </Link>
             ))}
           </div>
