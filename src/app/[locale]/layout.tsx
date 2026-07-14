@@ -4,6 +4,7 @@ import { routing } from "@/i18n/routing";
 import { Playfair_Display, Inter, Cairo } from "next/font/google";
 import { Toaster } from "sonner";
 import PixelTracker from "@/components/PixelTracker";
+import WhatsAppButton from "@/components/layout/WhatsAppButton";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -52,6 +53,7 @@ export default async function LocaleLayout({
       <body className="min-h-full flex flex-col bg-background text-text">
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
+          <WhatsAppButton />
           <Toaster
             position={isRTL ? "top-left" : "top-right"}
             richColors
