@@ -30,10 +30,20 @@ export default function GeneralSettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     const supabase = createClient();
+    let hasError = false;
     for (const [key, value] of Object.entries(settings)) {
-      await supabase.from("site_settings").upsert({ key, value, updated_at: new Date().toISOString() });
+      const { error } = await supabase.from("site_settings").upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+      if (error) {
+        console.error(error);
+        hasError = true;
+      }
     }
-    toast.success(t("saved"));
+    
+    if (hasError) {
+      toast.error(locale === "ar" ? "حدث خطأ أثناء الحفظ" : "Error saving settings");
+    } else {
+      toast.success(t("saved"));
+    }
     setSaving(false);
   };
 
