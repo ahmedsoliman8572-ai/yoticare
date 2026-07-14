@@ -20,8 +20,8 @@ export default function Footer() {
       const supabase = createClient();
       const { data } = await supabase.from("site_settings").select("*");
       if (data) {
-        const phoneSetting = data.find((s) => s.key === "phone");
-        const emailSetting = data.find((s) => s.key === "email");
+        const phoneSetting = data.find((s) => s.key === "contact_phone");
+        const emailSetting = data.find((s) => s.key === "contact_email");
         if (phoneSetting?.value) setPhone(phoneSetting.value);
         if (emailSetting?.value) setEmail(emailSetting.value);
       }
