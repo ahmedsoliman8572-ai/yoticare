@@ -81,7 +81,7 @@ export default function ShopPage() {
             </div>
           </div>
 
-          <div className="flex gap-8">
+          <div className="flex flex-col md:flex-row gap-8">
             {/* Sidebar Filters */}
             <aside className={`${showFilters ? "block" : "hidden"} md:block w-full md:w-56 shrink-0`}>
               <div className="sticky top-24 space-y-6">
