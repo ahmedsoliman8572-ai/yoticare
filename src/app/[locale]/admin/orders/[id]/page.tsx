@@ -21,6 +21,7 @@ export default function AdminOrderDetailPage() {
   const [order, setOrder] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -49,8 +50,8 @@ export default function AdminOrderDetailPage() {
     toast.success(t("paymentUpdated"));
   };
 
-  const handleDeleteOrder = async () => {
-    if (!confirm(locale === "ar" ? "هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء." : "Are you sure you want to delete this order? This action cannot be undone.")) return;
+  const executeDeleteOrder = async () => {
+    setShowDeleteModal(false);
     setUpdatingStatus(true);
     const supabase = createClient();
     const { error } = await supabase.from("orders").delete().eq("id", orderId);
@@ -82,7 +83,7 @@ export default function AdminOrderDetailPage() {
             <p className="text-text-muted text-sm mt-1">{new Date(order.created_at as string).toLocaleString(locale)}</p>
           </div>
         </div>
-        <button onClick={handleDeleteOrder} className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 rounded-lg transition-colors text-sm font-medium">
+        <button onClick={() => setShowDeleteModal(true)} className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 rounded-lg transition-colors text-sm font-medium">
           <Trash2 className="w-4 h-4" />
           <span className="hidden sm:inline">{locale === "ar" ? "حذف الطلب" : "Delete Order"}</span>
         </button>
@@ -148,6 +149,29 @@ export default function AdminOrderDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-scale-in border border-border/50">
+            <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-5 mx-auto border border-red-100">
+              <Trash2 className="w-6 h-6 text-red-500" />
+            </div>
+            <h3 className="text-xl font-bold text-center mb-2">{locale === "ar" ? "تأكيد الحذف" : "Confirm Deletion"}</h3>
+            <p className="text-text-muted text-center mb-6 text-sm">
+              {locale === "ar" ? "هل أنت متأكد من رغبتك في حذف هذا الطلب نهائياً؟ لا يمكن التراجع عن هذا الإجراء." : "Are you sure you want to permanently delete this order? This action cannot be undone."}
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setShowDeleteModal(false)} className="flex-1 px-4 py-2.5 rounded-xl border border-border text-text font-medium hover:bg-gray-50 transition-colors">
+                {locale === "ar" ? "تراجع" : "Cancel"}
+              </button>
+              <button onClick={executeDeleteOrder} className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition-colors shadow-sm shadow-red-200">
+                {locale === "ar" ? "نعم، احذفه" : "Yes, Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
