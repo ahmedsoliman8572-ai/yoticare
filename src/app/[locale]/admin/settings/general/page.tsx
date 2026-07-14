@@ -31,7 +31,7 @@ export default function GeneralSettingsPage() {
     setSaving(true);
     const supabase = createClient();
     for (const [key, value] of Object.entries(settings)) {
-      await supabase.from("site_settings").update({ value, updated_at: new Date().toISOString() }).eq("key", key);
+      await supabase.from("site_settings").upsert({ key, value, updated_at: new Date().toISOString() });
     }
     toast.success(t("saved"));
     setSaving(false);
