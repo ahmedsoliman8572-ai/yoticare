@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, Edit2, Truck } from "lucide-react";
+import { Plus, Edit2, Trash2, Truck, Loader2 } from "lucide-react";
+import { EGYPT_GOVERNORATES } from "@/lib/data/governorates";
 
 interface ShippingZone {
   id: string;
@@ -136,12 +137,20 @@ export default function ShippingZonesPage() {
             <h3 className="text-xl font-bold mb-4">{editingZone ? (locale === "ar" ? "تعديل محافظة" : "Edit Governorate") : (locale === "ar" ? "إضافة محافظة" : "Add Governorate")}</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1.5">{locale === "ar" ? "اسم المحافظة (إنجليزي)" : "Governorate Name (En)"}</label>
-                <input value={form.governorate_en} onChange={(e) => setForm({ ...form, governorate_en: e.target.value })} className={inputClass} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1.5">{locale === "ar" ? "اسم المحافظة (عربي)" : "Governorate Name (Ar)"}</label>
-                <input dir="rtl" value={form.governorate_ar} onChange={(e) => setForm({ ...form, governorate_ar: e.target.value })} className={inputClass} />
+                <label className="block text-sm font-medium mb-1.5">{locale === "ar" ? "اختر المحافظة" : "Select Governorate"}</label>
+                <select
+                  value={form.governorate_en}
+                  onChange={(e) => {
+                    const gov = EGYPT_GOVERNORATES.find(g => g.en === e.target.value);
+                    if (gov) setForm({ ...form, governorate_en: gov.en, governorate_ar: gov.ar });
+                  }}
+                  className={inputClass}
+                >
+                  <option value="">{locale === "ar" ? "اختر المحافظة" : "Select Governorate"}</option>
+                  {EGYPT_GOVERNORATES.map((gov) => (
+                    <option key={gov.en} value={gov.en}>{locale === "ar" ? gov.ar : gov.en}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1.5">{locale === "ar" ? "تكلفة الشحن (ج.م)" : "Shipping Cost (EGP)"}</label>
