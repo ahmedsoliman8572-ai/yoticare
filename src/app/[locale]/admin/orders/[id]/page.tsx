@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, User, MapPin, Phone, CreditCard, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, User, MapPin, Phone, CreditCard, Loader2, Trash2 } from "lucide-react";
 
 export default function AdminOrderDetailPage() {
   const t = useTranslations("admin.orderDetail");
@@ -49,6 +49,20 @@ export default function AdminOrderDetailPage() {
     toast.success(t("paymentUpdated"));
   };
 
+  const handleDeleteOrder = async () => {
+    if (!confirm(locale === "ar" ? "هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء." : "Are you sure you want to delete this order? This action cannot be undone.")) return;
+    setUpdatingStatus(true);
+    const supabase = createClient();
+    const { error } = await supabase.from("orders").delete().eq("id", orderId);
+    if (error) {
+      toast.error(locale === "ar" ? "حدث خطأ أثناء الحذف" : "Error deleting order");
+      setUpdatingStatus(false);
+    } else {
+      toast.success(locale === "ar" ? "تم حذف الطلب بنجاح" : "Order deleted successfully");
+      router.push(`/${locale}/admin/orders`);
+    }
+  };
+
   if (loading) return <div className="flex items-center justify-center py-24"><Loader2 className="w-8 h-8 text-primary animate-spin" /></div>;
   if (!order) return <div className="text-center py-24 text-text-muted">Order not found</div>;
 
@@ -57,9 +71,21 @@ export default function AdminOrderDetailPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center gap-4">
-        <button onClick={() => router.push(`/${locale}/admin/orders`)} className="p-2 rounded-lg hover:bg-gray-100"><BackArrow className="w-5 h-5 text-text-secondary" /></button>
-        <h1 className="text-2xl font-bold font-heading">{t("orderNumber")} #{order.order_number as string}</h1>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <button onClick={() => router.push(`/${locale}/admin/orders`)} className="p-2 hover:bg-white rounded-full transition-colors"><BackArrow className="w-5 h-5 text-text-muted" /></button>
+          <div>
+            <h1 className="text-2xl font-bold font-heading text-text flex items-center gap-3">
+              {t("orderNumber")} #{order.order_number as string}
+              <span className={`text-sm px-2.5 py-1 rounded-full border ${order.status === "cancelled" ? "bg-red-50 text-red-600 border-red-200" : order.status === "delivered" ? "bg-green-50 text-green-600 border-green-200" : "bg-primary-50 text-primary border-primary-200"}`}>{tStatus(order.status as "pending" | "confirmed" | "shipped" | "delivered" | "cancelled")}</span>
+            </h1>
+            <p className="text-text-muted text-sm mt-1">{new Date(order.created_at as string).toLocaleString(locale)}</p>
+          </div>
+        </div>
+        <button onClick={handleDeleteOrder} className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 rounded-lg transition-colors text-sm font-medium">
+          <Trash2 className="w-4 h-4" />
+          <span className="hidden sm:inline">{locale === "ar" ? "حذف الطلب" : "Delete Order"}</span>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
