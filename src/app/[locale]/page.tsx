@@ -1,4 +1,4 @@
-import { useTranslations, useLocale } from "next-intl";
+import { getTranslations, getLocale } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
@@ -8,9 +8,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getStorageUrl } from "@/lib/utils";
 
 export default async function HomePage() {
-  const t = useTranslations("home");
-  const tCommon = useTranslations("common");
-  const locale = useLocale();
+  const t = await getTranslations("home");
+  const tCommon = await getTranslations("common");
+  const locale = await getLocale();
   
   const supabase = await createClient();
   const { data: dbCategories } = await supabase
