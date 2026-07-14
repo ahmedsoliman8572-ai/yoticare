@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
   );
 
   if (isAdminRoute) {
-    // Refresh session and check auth
+    // Refresh session and check auth ONLY on admin routes
     const { user } = await updateSession(request, response);
 
     if (!user) {
@@ -31,9 +31,6 @@ export async function middleware(request: NextRequest) {
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
-  } else {
-    // Still refresh the session for non-admin routes
-    await updateSession(request, response);
   }
 
   return response;
