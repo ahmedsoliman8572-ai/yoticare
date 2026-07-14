@@ -19,6 +19,7 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -34,20 +35,19 @@ export default function AdminOrdersPage() {
     fetchOrders();
   }, [search, statusFilter]);
 
-  const handleDeleteOrder = async (id: string) => {
-    if (!confirm(locale === "ar" ? "هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء." : "Are you sure you want to delete this order? This action cannot be undone.")) return;
-    
+  const executeDeleteOrder = async () => {
+    if (!orderToDelete) return;
     setLoading(true);
     const supabase = createClient();
-    const { error } = await supabase.from("orders").delete().eq("id", id);
+    const { error } = await supabase.from("orders").delete().eq("id", orderToDelete);
     if (error) {
       toast.error(locale === "ar" ? "حدث خطأ أثناء الحذف" : "Error deleting order");
-      setLoading(false);
     } else {
       toast.success(locale === "ar" ? "تم حذف الطلب بنجاح" : "Order deleted successfully");
-      setOrders(orders.filter(o => o.id !== id));
-      setLoading(false);
+      setOrders(orders.filter(o => o.id !== orderToDelete));
     }
+    setOrderToDelete(null);
+    setLoading(false);
   };
 
   const statusBadge = (status: string) => {
@@ -144,7 +144,7 @@ export default function AdminOrdersPage() {
                     <td className="px-4 py-3 font-medium">{formatPrice(order.total)}</td>
                     <td className="px-4 py-3 flex items-center justify-end gap-2">
                       <Link href={`/${locale}/admin/orders/${order.id}`} className="p-1.5 rounded-lg hover:bg-gray-100 text-text-muted hover:text-primary inline-flex transition-colors" title={locale === "ar" ? "عرض" : "View"}><Eye className="w-4 h-4" /></Link>
-                      <button onClick={() => handleDeleteOrder(order.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-text-muted hover:text-red-600 inline-flex transition-colors" title={locale === "ar" ? "حذف" : "Delete"}><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => setOrderToDelete(order.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-text-muted hover:text-red-600 inline-flex transition-colors" title={locale === "ar" ? "حذف" : "Delete"}><Trash2 className="w-4 h-4" /></button>
                     </td>
                   </tr>
                 ))}
@@ -153,6 +153,29 @@ export default function AdminOrdersPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {orderToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-scale-in border border-border/50">
+            <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-5 mx-auto border border-red-100">
+              <Trash2 className="w-6 h-6 text-red-500" />
+            </div>
+            <h3 className="text-xl font-bold text-center mb-2">{locale === "ar" ? "تأكيد الحذف" : "Confirm Deletion"}</h3>
+            <p className="text-text-muted text-center mb-6 text-sm">
+              {locale === "ar" ? "هل أنت متأكد من رغبتك في حذف هذا الطلب نهائياً؟ لا يمكن التراجع عن هذا الإجراء." : "Are you sure you want to permanently delete this order? This action cannot be undone."}
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setOrderToDelete(null)} className="flex-1 px-4 py-2.5 rounded-xl border border-border text-text font-medium hover:bg-gray-50 transition-colors">
+                {locale === "ar" ? "تراجع" : "Cancel"}
+              </button>
+              <button onClick={executeDeleteOrder} className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition-colors shadow-sm shadow-red-200">
+                {locale === "ar" ? "نعم، احذفه" : "Yes, Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
