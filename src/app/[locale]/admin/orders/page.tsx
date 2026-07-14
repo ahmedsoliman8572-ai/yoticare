@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/utils";
-import { ShoppingCart, Eye, Search, Download } from "lucide-react";
+import { ShoppingCart, Eye, Search, Download, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface OrderRow { id: string; order_number: string; customer_name: string; customer_phone: string; status: string; payment_method: string; payment_status: string; total: number; created_at: string; }
@@ -33,6 +33,22 @@ export default function AdminOrdersPage() {
     };
     fetchOrders();
   }, [search, statusFilter]);
+
+  const handleDeleteOrder = async (id: string) => {
+    if (!confirm(locale === "ar" ? "هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء." : "Are you sure you want to delete this order? This action cannot be undone.")) return;
+    
+    setLoading(true);
+    const supabase = createClient();
+    const { error } = await supabase.from("orders").delete().eq("id", id);
+    if (error) {
+      toast.error(locale === "ar" ? "حدث خطأ أثناء الحذف" : "Error deleting order");
+      setLoading(false);
+    } else {
+      toast.success(locale === "ar" ? "تم حذف الطلب بنجاح" : "Order deleted successfully");
+      setOrders(orders.filter(o => o.id !== id));
+      setLoading(false);
+    }
+  };
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = { pending: "badge-warning", confirmed: "badge-primary", shipped: "badge-primary", delivered: "badge-success", cancelled: "badge-error" };
@@ -126,7 +142,10 @@ export default function AdminOrdersPage() {
                     <td className="px-4 py-3 hidden md:table-cell"><span className={`badge ${paymentBadge(order.payment_status)}`}>{tPayment(order.payment_status as "pending" | "paid")}</span></td>
                     <td className="px-4 py-3"><span className={`badge ${statusBadge(order.status)}`}>{tStatus(order.status as "pending" | "confirmed" | "shipped" | "delivered" | "cancelled")}</span></td>
                     <td className="px-4 py-3 font-medium">{formatPrice(order.total)}</td>
-                    <td className="px-4 py-3 text-end"><Link href={`/${locale}/admin/orders/${order.id}`} className="p-1.5 rounded-lg hover:bg-gray-100 text-text-muted hover:text-primary inline-flex"><Eye className="w-4 h-4" /></Link></td>
+                    <td className="px-4 py-3 flex items-center justify-end gap-2">
+                      <Link href={`/${locale}/admin/orders/${order.id}`} className="p-1.5 rounded-lg hover:bg-gray-100 text-text-muted hover:text-primary inline-flex transition-colors" title={locale === "ar" ? "عرض" : "View"}><Eye className="w-4 h-4" /></Link>
+                      <button onClick={() => handleDeleteOrder(order.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-text-muted hover:text-red-600 inline-flex transition-colors" title={locale === "ar" ? "حذف" : "Delete"}><Trash2 className="w-4 h-4" /></button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
