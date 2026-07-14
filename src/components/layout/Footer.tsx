@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin, Facebook, Instagram } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -14,6 +14,9 @@ export default function Footer() {
 
   const [phone, setPhone] = useState("+20 1XX XXX XXXX");
   const [email, setEmail] = useState("info@yoticare.com");
+  const [facebook, setFacebook] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [tiktok, setTiktok] = useState("");
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -22,8 +25,15 @@ export default function Footer() {
       if (data) {
         const phoneSetting = data.find((s) => s.key === "contact_phone");
         const emailSetting = data.find((s) => s.key === "contact_email");
+        const fbSetting = data.find((s) => s.key === "facebook_url");
+        const igSetting = data.find((s) => s.key === "instagram_url");
+        const ttSetting = data.find((s) => s.key === "tiktok_url");
+        
         if (phoneSetting?.value) setPhone(phoneSetting.value);
         if (emailSetting?.value) setEmail(emailSetting.value);
+        if (fbSetting?.value) setFacebook(fbSetting.value);
+        if (igSetting?.value) setInstagram(igSetting.value);
+        if (ttSetting?.value) setTiktok(ttSetting.value);
       }
     };
     fetchSettings();
@@ -61,6 +71,23 @@ export default function Footer() {
             <p className="text-white/70 text-sm leading-relaxed max-w-xs">
               {tCommon("siteDescription")}
             </p>
+            <div className="flex gap-3 mt-6">
+              {facebook && (
+                <a href={facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-accent hover:text-primary-dark transition-all duration-300 hover:-translate-y-1" aria-label="Facebook">
+                  <Facebook className="w-5 h-5" />
+                </a>
+              )}
+              {instagram && (
+                <a href={instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-accent hover:text-primary-dark transition-all duration-300 hover:-translate-y-1" aria-label="Instagram">
+                  <Instagram className="w-5 h-5" />
+                </a>
+              )}
+              {tiktok && (
+                <a href={tiktok} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-accent hover:text-primary-dark transition-all duration-300 hover:-translate-y-1" aria-label="TikTok">
+                  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                </a>
+              )}
+            </div>
           </div>
 
           {/* Quick Links */}
