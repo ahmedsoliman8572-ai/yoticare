@@ -176,27 +176,6 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Newsletter CTA */}
-        <section className="container-custom py-16 md:py-24">
-          <div className="bg-gradient-to-r from-primary to-primary-dark rounded-2xl p-8 md:p-12 text-center text-white max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold font-heading mb-3">
-              {t("newsletter")}
-            </h2>
-            <p className="text-white/80 mb-8 max-w-md mx-auto">
-              {t("newsletterDesc")}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder={t("emailPlaceholder")}
-                className="flex-1 px-5 py-3 rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-              />
-              <button className="px-6 py-3 bg-accent text-primary-dark font-semibold rounded-full hover:bg-accent-dark hover:text-white transition-colors">
-                {t("subscribe")}
-              </button>
-            </div>
-          </div>
-        </section>
       </main>
       <Footer />
     </>
