@@ -88,9 +88,9 @@ export default function ShopPage() {
                 <div>
                   <h3 className="font-semibold text-sm text-text mb-3 flex items-center gap-2"><SlidersHorizontal className="w-4 h-4" />{t("allCategories")}</h3>
                   <div className="space-y-1">
-                    <button onClick={() => setSelectedCategory("")} className={`w-full text-start px-3 py-2 rounded-lg text-sm transition-colors ${!selectedCategory ? "bg-primary-50 text-primary font-medium" : "text-text-secondary hover:bg-gray-50"}`}>{t("allCategories")}</button>
+                    <button onClick={() => { setSelectedCategory(""); setShowFilters(false); }} className={`w-full text-start px-3 py-2 rounded-lg text-sm transition-colors ${!selectedCategory ? "bg-primary-50 text-primary font-medium" : "text-text-secondary hover:bg-gray-50"}`}>{t("allCategories")}</button>
                     {categories.map((cat) => (
-                      <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`w-full text-start px-3 py-2 rounded-lg text-sm transition-colors ${selectedCategory === cat.id ? "bg-primary-50 text-primary font-medium" : "text-text-secondary hover:bg-gray-50"}`}>
+                      <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setShowFilters(false); }} className={`w-full text-start px-3 py-2 rounded-lg text-sm transition-colors ${selectedCategory === cat.id ? "bg-primary-50 text-primary font-medium" : "text-text-secondary hover:bg-gray-50"}`}>
                         {locale === "ar" ? cat.name_ar : cat.name_en}
                       </button>
                     ))}
