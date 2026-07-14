@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Minus, Plus, Trash2, ShoppingBag, Loader2, Wallet, Banknote } from "lucide-react";
+import { EGYPT_GOVERNORATES } from "@/lib/data/governorates";
 
 interface PaymentMethodOption { id: string; type: string; label_en: string; label_ar: string; instructions_en: string | null; instructions_ar: string | null; wallet_number: string | null; account_name: string | null; }
 
@@ -209,17 +210,13 @@ export default function CheckoutPage() {
                   <div><label className="block text-sm font-medium mb-1.5">{t("email")}</label><input type="email" value={form.customer_email} onChange={(e) => setForm({ ...form, customer_email: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring" placeholder={t("emailPlaceholder")} /></div>
                   <div>
                     <label className="block text-sm font-medium mb-1.5">{t("governorate")} *</label>
-                    {shippingZones.length > 0 ? (
-                      <select value={form.customer_governorate} onChange={handleGovernorateChange} className="w-full px-4 py-2.5 rounded-lg border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring">
-                        <option value="">{locale === "ar" ? "اختر المحافظة" : "Select Governorate"}</option>
-                        {shippingZones.map((z) => {
-                          const name = locale === "ar" ? z.governorate_ar : z.governorate_en;
-                          return <option key={z.id} value={name}>{name}</option>;
-                        })}
-                      </select>
-                    ) : (
-                      <input value={form.customer_governorate} onChange={handleGovernorateChange} className="w-full px-4 py-2.5 rounded-lg border border-border focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring" placeholder={t("governoratePlaceholder")} />
-                    )}
+                    <select value={form.customer_governorate} onChange={handleGovernorateChange} className="w-full px-4 py-2.5 rounded-lg border border-border bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring">
+                      <option value="">{locale === "ar" ? "اختر المحافظة" : "Select Governorate"}</option>
+                      {EGYPT_GOVERNORATES.map((gov) => {
+                        const name = locale === "ar" ? gov.ar : gov.en;
+                        return <option key={gov.en} value={name}>{name}</option>;
+                      })}
+                    </select>
                   </div>
                   <div><label className="block text-sm font-medium mb-1.5">{t("city")} *</label><input value={form.customer_city} onChange={(e) => setForm({ ...form, customer_city: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring" placeholder={t("cityPlaceholder")} /></div>
                   <div className="md:col-span-2"><label className="block text-sm font-medium mb-1.5">{t("address")} *</label><textarea rows={2} value={form.customer_address} onChange={(e) => setForm({ ...form, customer_address: e.target.value })} className="w-full px-4 py-2.5 rounded-lg border border-border focus:outline-none focus:border-primary focus:ring-2 focus:ring-ring" placeholder={t("addressPlaceholder")} /></div>
